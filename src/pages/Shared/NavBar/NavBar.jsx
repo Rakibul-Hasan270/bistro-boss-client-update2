@@ -1,13 +1,33 @@
 import { Link } from "react-router-dom";
+import useAuth from "../../../hooks/useAuth";
+import { FaShoppingCart } from "react-icons/fa";
+import UseCart from "../../../hooks/UseCart";
 
 const NavBar = () => {
+    const { user, logOut } = useAuth();
+    const [cart] = UseCart();
+
+    const handelLogOut = async () => {
+        try {
+            await logOut();
+        } catch (err) { console.log(err); }
+    }
 
     const navOptions = <>
         <li><Link to="/">Home</Link></li>
         <li><Link to="/menu">Our Menu</Link></li>
         <li><Link to="/order/salad">Order Food</Link></li>
-        <li><Link to="/login">Login</Link></li>
-        <li><Link to="/register">Register</Link></li>
+        <li><Link to="/secret">Secret</Link></li>
+        <li>
+            <Link to='/'>
+                <button className="btn">
+                    <FaShoppingCart className="mr-2"></FaShoppingCart> <div className="badge badge-sm badge-secondary">+{cart.length}</div>
+                </button>
+            </Link>
+        </li>
+
+        {user ? <><button onClick={handelLogOut} className="btn btn-xs">Log Out</button></> : <><li><Link to="/login">Login</Link></li>
+            <li><Link to="/register">Register</Link></li></>}
 
     </>
 

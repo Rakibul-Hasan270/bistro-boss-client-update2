@@ -1,25 +1,53 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { loadCaptchaEnginge, LoadCanvasTemplate, validateCaptcha } from 'react-simple-captcha';
+import useAuth from '../../hooks/useAuth';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { useForm } from 'react-hook-form';
 
 const Login = () => {
-    const captchaRef = useRef(null);
+    const { reset } = useForm();
     const [disable, setDisable] = useState(true);
+    const { signInUser } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
 
     useEffect(() => {
         loadCaptchaEnginge(6);
     }, [])
 
-    const handelLoginFormSubmit = event => {
+    const handelLoginFormSubmit = async event => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-        // const captchaValu = form.captcha.value;
-        console.log(email, password);
+        try {
+            await signInUser(email, password);
+            Swal.fire({
+                title: "Login Successfully.",
+                showClass: {
+                    popup: `
+      animate__animated
+      animate__fadeInUp
+      animate__faster
+    `
+                },
+                hideClass: {
+                    popup: `
+      animate__animated
+      animate__fadeOutDown
+      animate__faster
+    `
+                }
+            });
+            navigate(from, { replace: true });
+            reset();
+        } catch (err) { console.log(err) }
     }
 
-    const hadelValidCaptcha = () => {
-        const typeCaptcha = captchaRef.current.value;
+    const hadelValidCaptcha = event => {
+        const typeCaptcha = event.target.value;
         if (validateCaptcha(typeCaptcha)) {
             setDisable(false);
         } else {
@@ -47,13 +75,13 @@ const Login = () => {
 
                             <label className="label">Captcha</label>
                             <LoadCanvasTemplate />
-                            <input ref={captchaRef} name="captcha" type="captcha" className="input bg-white text-black mb-3" placeholder="type the captcha above" />
-                            <button onClick={hadelValidCaptcha} className='btn btn-xs'>valid captcha</button>
+                            <input onBlur={hadelValidCaptcha} name="captcha" type="captcha" className="input bg-white text-black mb-3" placeholder="type the captcha above" />
 
                             <div><a className="link link-hover">Forgot password?</a></div>
-                            <input disabled={disable} className="btn btn-neutral mt-4" type="submit" value='Login' />
+                            <input disabled={false} className="btn btn-neutral mt-4" type="submit" value='Login' />
                         </fieldset>
                     </form>
+                    <p>New here? <Link className='text-green-400' to='/register'>Pleace Register</Link></p>
                 </div>
             </div>
         </div>

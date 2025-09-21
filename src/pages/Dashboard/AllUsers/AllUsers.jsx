@@ -12,7 +12,11 @@ const AllUsers = () => {
     const { data: users = [], refetch } = useQuery({
         queryKey: ['users', user?.email],
         queryFn: async () => {
-            const res = await axiosSecure.get('/users')
+            const res = await axiosSecure.get('/users', {
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('access-token')}`
+                }
+            })
             return res.data;
         }
     })
@@ -41,13 +45,32 @@ const AllUsers = () => {
                     })
             }
         });
+    }
 
-
-
-
-
-
-
+    const handelMakeAdmin = user => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Admin!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axiosSecure.patch(`/users/admin/${user._id}`)
+                    .then(res => {
+                        if (res.data.modifiedCount) {
+                            refetch();
+                            Swal.fire({
+                                title: "Admin!",
+                                text: `${user.name} Admin now.`,
+                                icon: "success"
+                            });
+                        }
+                    })
+            }
+        });
 
     }
 
@@ -73,15 +96,15 @@ const AllUsers = () => {
                                     <th>{idx + 1}</th>
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
-                                    <td><button className="btn"><FaUsers></FaUsers></button></td>
-                                    <td><button onClick={() => handelDelete(user._id)} className="btn"><FaTrashAlt></FaTrashAlt></button></td>
+                                    < td >{user.role === 'admin' ? <p className="text-green-400">Admin</p> : <button title="Make Admin" onClick={() => handelMakeAdmin(user)} className="btn"><FaUsers className="text-orange-400"></FaUsers></button>}</td>
+                                    <td><button title="Delete User" onClick={() => handelDelete(user._id)} className="btn"><FaTrashAlt className="text-red-600"></FaTrashAlt></button></td>
                                 </tr>)
                             }
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

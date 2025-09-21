@@ -4,6 +4,7 @@ import useAuth from '../../hooks/useAuth';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useForm } from 'react-hook-form';
+import SocialLogin from '../../components/SocialLogin/SocialLogin';
 
 const Login = () => {
     const { reset } = useForm();
@@ -82,6 +83,7 @@ const Login = () => {
                         </fieldset>
                     </form>
                     <p>New here? <Link className='text-green-400' to='/register'>Pleace Register</Link></p>
+                    <div className="flex justify-center mt-4"><SocialLogin></SocialLogin></div>
                 </div>
             </div>
         </div>

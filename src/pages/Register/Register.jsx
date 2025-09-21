@@ -3,50 +3,49 @@ import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import SocialLogin from "../../components/SocialLogin/SocialLogin";
 
 const Register = () => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const { createUser, updateUserProfile } = useAuth();
     const navigate = useNavigate();
+    const axiosPublic = useAxiosPublic();
 
     const onSubmit = async data => {
         const name = data.name;
         const photoUrl = data.photo;
         const email = data.email;
         const password = data.password;
+        const userInfo = { name, email };
         try {
             await createUser(email, password);
             await updateUserProfile(name, photoUrl);
-            Swal.fire({
-                title: "Register Successfully.",
-                showClass: {
-                    popup: `
-                  animate__animated
-                  animate__fadeInUp
-                  animate__faster
-                `
-                },
-                hideClass: {
-                    popup: `
-                  animate__animated
-                  animate__fadeOutDown
-                  animate__faster
-                `
-                }
-            });
-            navigate('/');
-            reset();
+            const res = await axiosPublic.post('/users', userInfo);
+            if (res.data.insertedId) {
+                Swal.fire({
+                    title: "Register Successfully.",
+                    showClass: {
+                        popup: `
+                      animate__animated
+                      animate__fadeInUp
+                      animate__faster
+                    `
+                    },
+                    hideClass: {
+                        popup: `
+                      animate__animated
+                      animate__fadeOutDown
+                      animate__faster
+                    `
+                    }
+                });
+                navigate('/');
+                reset();
+            }
         } catch (err) { console.log(err); }
     }
 
-    // const handelRegisterFormSubmit = event => {
-    //     event.preventDefault();
-    //     const form = event.target;
-    //     const name = form.name.value;
-    //     const email = form.email.value;
-    //     const password = form.password.value;
-    //     console.log(name, email, password);
-    // }
     return (
         <>
             <Helmet>
@@ -88,7 +87,8 @@ const Register = () => {
                                 <input className="btn btn-neutral mt-4" type="submit" value='Register' />
                             </fieldset>
                         </form>
-                        <p>Already have an account? <Link className="text-green-400" to='/login'>Login</Link></p>
+                        <div className="flex justify-center"><p>Already have an account? <Link className="text-green-400" to='/login'>Login</Link></p></div>
+                        <div className="flex justify-center mt-4"><SocialLogin></SocialLogin></div>
                     </div>
                 </div>
             </div>

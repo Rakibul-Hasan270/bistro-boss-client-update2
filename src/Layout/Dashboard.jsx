@@ -1,8 +1,12 @@
-import { FaAd, FaCalendar, FaHome, FaList, FaShoppingBag, FaShoppingCart } from "react-icons/fa";
+import { FaAd, FaBook, FaCalendar, FaHome, FaList, FaPlus, FaShoppingBag, FaShoppingCart, FaUsers } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
 import { Link, NavLink, Outlet } from "react-router-dom";
+import UseCart from "../hooks/UseCart";
 
 const Dashboard = () => {
+    const [cart] = UseCart();
+    const isAdmin = true;
+
     return (
         <div className="flex">
             <div className="menu p-4 w-64 min-h-screen bg-orange-400">
@@ -11,11 +15,20 @@ const Dashboard = () => {
                     <h2 className="text-xl text-white uppercase font-serif">Restaurent</h2>
                 </Link>
 
-                <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/userHome'> <FaHome></FaHome>User Home</NavLink></li>
-                <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/reservition'> <FaCalendar></FaCalendar>Reservition</NavLink></li>
-                <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/cart'> <FaShoppingCart></FaShoppingCart>Cart</NavLink></li>
-                <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/review'> <FaAd></FaAd>Add a Review</NavLink></li>
-                <li><NavLink className='bg-slate-700 text-white' to='/dashboard/booking'> <FaList></FaList>My Booking</NavLink></li>
+                {isAdmin ? <>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/adminHome'> <FaHome></FaHome>Admin Home</NavLink></li>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/addItem'> <FaPlus></FaPlus>Add Item</NavLink></li>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/addItem'> <FaList></FaList>Manage Item</NavLink></li>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/addItem'> <FaBook></FaBook>Manage Booking</NavLink></li>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/allUsers'> <FaUsers></FaUsers>All Users</NavLink></li>
+
+                </> : <>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/userHome'> <FaHome></FaHome>User Home</NavLink></li>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/reservition'> <FaCalendar></FaCalendar>Reservition</NavLink></li>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/cart'> <FaShoppingCart></FaShoppingCart>Cart ({cart.length})</NavLink></li>
+                    <li className="mb-1"><NavLink className='bg-slate-700 text-white' to='/dashboard/review'> <FaAd></FaAd>Add a Review</NavLink></li>
+                    <li><NavLink className='bg-slate-700 text-white' to='/dashboard/booking'> <FaList></FaList>My Booking</NavLink></li>
+                </>}
 
                 <div className="divider bg-white mt-6 mb-6 h-[1px]"></div>
 

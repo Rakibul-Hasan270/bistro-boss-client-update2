@@ -8,7 +8,8 @@ const AdminRoutes = ({ children }) => {
     const location = useLocation();
 
     if (loading || isAdminLoading) {
-        return <div className="progress-secondary mx-auto"></div>
+        // return <div className="progress-secondary mx-auto"></div>
+        return <p>Loading...</p>
     }
 
 
@@ -16,7 +17,7 @@ const AdminRoutes = ({ children }) => {
         return children;
     }
 
-    return <Navigate to='/login' state={{ from: location }} replace></Navigate>
+    return <Navigate to='/' state={{ from: location }} replace></Navigate>
 };
 
 export default AdminRoutes;

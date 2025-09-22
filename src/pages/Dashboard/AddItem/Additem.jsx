@@ -1,29 +1,35 @@
 import { useForm } from "react-hook-form";
 import SectionTitle from "../../../components/SectionTitle/SectionTitle";
+import useAxiosPublic from "../../../hooks/useAxiosPublic";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+
+const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
+const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
 const AddItem = () => {
-    const {
-        register,
-        formState: { errors },
-        handleSubmit,
-        reset,
-    } = useForm();
+    const { register, formState: { errors }, handleSubmit } = useForm();
+    const axiosPublic = useAxiosPublic();
+    const axiosSecure = useAxiosSecure();
 
-    const onSubmit = (data) => {
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("category", data.category);
-        formData.append("price", data.price);
-        formData.append("recipeDetails", data.recipeDetails);
-        formData.append("image", data.image[0]); // single file
 
-        // Just log for now
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
+    const onSubmit = async data => {
+        const imageFile = { image: data.image[0] };
+
+        const res = await axiosPublic.post(image_hosting_api, imageFile, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        console.log('ata image hostiong ar clg__', res.data.success);
+        if (res.data.success) {
+            const itemInfo = {
+                name: data.name,
+                category: data.category,
+                price: data.price,
+                recipr: data.recipeDetails,
+                image: data.image
+            }
+            const result = await axiosSecure.post('/menu', itemInfo);
+            console.log('from post api axiosSecure', result);
         }
-
-        // reset form
-        reset();
     };
 
     return (

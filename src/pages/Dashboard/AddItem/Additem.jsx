@@ -2,12 +2,13 @@ import { useForm } from "react-hook-form";
 import SectionTitle from "../../../components/SectionTitle/SectionTitle";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
 const AddItem = () => {
-    const { register, formState: { errors }, handleSubmit } = useForm();
+    const { register, formState: { errors }, reset, handleSubmit } = useForm();
     const axiosPublic = useAxiosPublic();
     const axiosSecure = useAxiosSecure();
 
@@ -25,10 +26,20 @@ const AddItem = () => {
                 category: data.category,
                 price: data.price,
                 recipr: data.recipeDetails,
-                image: data.image
+                image: res.data.data.display_url
             }
             const result = await axiosSecure.post('/menu', itemInfo);
-            console.log('from post api axiosSecure', result);
+            // console.log(itemInfo);
+            if (result.data.acknowledged) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: `${data.name} added successfully`,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                reset();
+            }
         }
     };
 
